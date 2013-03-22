@@ -1,0 +1,2 @@
+SET SUBDIR=%~dp0
+C:\WINDOWS\system32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SUBDIR%BuildDeploy.ps1" -name "Demo" -project "Demo" -buildscript "%SUBDIR%Application.msbuild" -server "web01" -publish

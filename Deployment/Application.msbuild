@@ -1,0 +1,55 @@
+<!--
+    Author: Michael West
+    Blog: http://michaellwest.blogspot.com/
+    Date: 03.21.2013
+-->
+
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- http://msdn.microsoft.com/en-us/library/3e54c37h(v=vs.90).aspx -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Path where the solution file is located (.sln) -->
+    <RootPath>C:\Inetpub\wwwroot</RootPath>
+    <ProjectPath>$(RootPath)\$(Project)</ProjectPath>
+    <!-- Location of compiled files -->
+    <BuildLibrary>$(RootPath)\$(Project)\Lib</BuildLibrary>
+    <BuildDirectory>$(RootPath)\$(Project)\bin</BuildDirectory>
+	  <BuildOutput>$(RootPath)\$(Project)\Build\$(Name)</BuildOutput>
+    <PublishOutput>C:\Builds\</PublishOutput>
+    <!-- Name of the solution to be compiled without the .sln extension -->         
+    <ProjectSolutionName>$(Project)</ProjectSolutionName>
+  </PropertyGroup>
+  <Target Name="ReleaseBuild">
+    <Message Text="$(MSBuildExtensionsPath)" />
+    <Message Text="Building $(ProjectSolutionName) Release Build" />
+    <CallTarget Targets="RemoveDirectories;CreateDirectories;" />
+    <MSBuild Projects="$(ProjectPath)\$(ProjectSolutionName).sln" Targets="Clean;Rebuild;" Properties="Configuration=Release;Platform=Any CPU;WebProjectOutputDir=$(BuildOutput); OutDir=$(BuildDirectory)\" />
+    <Message Text="$(ProjectSolutionName) Release Build Complete!" />
+    <CallTarget Targets="CopyBuildFiles;Publish" />
+  </Target>
+   <Target Name="CopyBuildFiles">
+    	<ItemGroup>
+			<BuildFiles Include="$(BuildDirectory)\**\*.*;$(BuildLibrary)\**\*.*;" Exclude="$(BuildDirectory)\Web.config" />
+			<VersionedAssemblies Include="$(BuildDirectory)\$(Project).dll" />
+		</ItemGroup>
+    	<Copy SourceFiles="@(BuildFiles)" DestinationFolder="$(BuildOutput)\bin" />
+    	<GetAssemblyIdentity
+            AssemblyFiles="@(VersionedAssemblies)">
+            <Output TaskParameter="Assemblies" ItemName="AssemblyIdentities" />
+		</GetAssemblyIdentity>
+  </Target>
+  <Target Name="RemoveDirectories">
+	 <RemoveDir Directories="$(BuildOutput)" />
+  </Target>
+  <Target Name="CreateDirectories">
+	<MakeDir Directories="$(BuildOutput)" />
+  </Target>
+  <Target Name="Publish">
+    <!-- DEV Build -->
+    <ItemGroup>
+        <BuildOutputDEVFiles Include="$(BuildOutput)\**\*;" Exclude="$(BuildOutput)\**\*.pdb;" />
+    </ItemGroup>
+    <Copy SourceFiles="@(BuildOutputDEVFiles)" DestinationFiles="@(BuildOutputDEVFiles->'$(PublishOutput)\$(Name)\%(RecursiveDir)%(Filename)%(Extension)')" />
+	  <Delete Files="$(PublishOutput)\$(Name)" />
+  </Target>
+</Project>

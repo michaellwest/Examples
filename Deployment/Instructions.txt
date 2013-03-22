@@ -1,0 +1,19 @@
+Requirements:
+1. Visual Studio 2012 installed on your local machine.
+
+Setup:
+1. Copy Demo project to C:\Inetpub\wwwroot\ on your local machine.
+2. Open the BuildDeploy.bat and change the server parameter.
+
+Usage:
+Open the deployment directory and run the BuildDeploy.bat
+
+What Happens?
+1. BuildDeploy.bat will run the BuildDeploy.ps1.
+2. BuildDeploy.ps1 will run the msbuild.exe which builds the Application.msbuild.
+3. Application.msbuild is a generic file that will compile Demo.csproj.
+4. PublishApplication.ps1 is loaded into the session then Publish-Application is called.
+5. The code is copied to the \\web01\c$\Builds (this is to avoid the multi-hop issue in remoting)
+6. Install-WebApplication is executed remotely on web01 and then IIS is configured to host the new application. The code is copied to C:\Inetpub\wwwroot\ on web01.
+
+I hope this works right out of the box for you.
