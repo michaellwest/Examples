@@ -1,9 +1,11 @@
 Requirements:
 1. Visual Studio 2012 installed on your local machine.
+2. IIS installed on destination server.
 
 Setup:
 1. Copy Demo project to C:\Inetpub\wwwroot\ on your local machine.
 2. Open the BuildDeploy.bat and change the server parameter.
+3. Enable-PSRemoting on the destination server (ensure all your network connections are not Public).
 
 Usage:
 Open the deployment directory and run the BuildDeploy.bat
@@ -17,3 +19,7 @@ What Happens?
 6. Install-WebApplication is executed remotely on web01 and then IIS is configured to host the new application. The code is copied to C:\Inetpub\wwwroot\ on web01.
 
 I hope this works right out of the box for you.
+
+Troubleshooting:
+1. Configuration change when not in a domain
+  a. winrm set winrm/config/client @{TrustedHosts="<ServerName>"}
