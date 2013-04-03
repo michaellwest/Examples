@@ -83,8 +83,10 @@ $ScriptBlock = {
 
         if ((Get-WebAppPoolState -Name $ApplicationPool).Value -ne "Stopped") {
             Write-Message -Message "Stopping $($ApplicationPool)" -Group "AppPool"
-            Stop-WebAppPool -Name $ApplicationPool
-            Start-Sleep -Seconds 5
+            while((Get-WebAppPoolState -Name $ApplicationPool).Value -ne "Stopped") {
+	    	Stop-WebAppPool -Name $ApplicationPool
+		Start-Sleep -Seconds 2
+	    }
         } else {
             Write-Message -Message "$($ApplicationPool) stopped" -Group "AppPool"
         }
@@ -108,7 +110,7 @@ $ScriptBlock = {
             Remove-Item -Path $destination -Recurse -Force
         }
 
-        Copy-Item -Path $Path -Destination $root -Recurse
+        Copy-Item -Path $Path -Destination $root -Recurse -Force
 
         if ((Get-WebApplication -Name $Name) -eq $null) {
             Write-Message -Message "Creating $($Name)" -Group "Application"
